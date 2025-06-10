@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salão - Agendamento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #fdf6f7;
+      font-family: 'Montserrat', sans-serif;
+      color: #4b4b4b;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      color: #c86b82;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #a04c5e;
+    }
+
+    header {
+      background: #fff0f3;
+      padding: 25px 40px;
+      box-shadow: 0 2px 8px rgba(200, 107, 130, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Playfair Display', serif;
+    }
+    header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #c86b82;
+      letter-spacing: 2px;
+    }
+    nav a {
+      margin-left: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    main {
+      flex-grow: 1;
+      max-width: 600px;
+      margin: 40px auto 60px;
+      background: #fff;
+      border-radius: 15px;
+      padding: 40px 50px;
+      box-shadow: 0 10px 30px rgba(200, 107, 130, 0.1);
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 2.3rem;
+      margin-bottom: 25px;
+      color: #a04c5e;
+      border-bottom: 2px solid #c86b82;
+      padding-bottom: 8px;
+      max-width: fit-content;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #77505d;
+      font-size: 0.9rem;
+    }
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.8px solid #d8b7c1;
+      font-size: 1rem;
+      font-weight: 400;
+      color: #4b4b4b;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+      border-color: #c86b82;
+      outline: none;
+      box-shadow: 0 0 8px #f6c3cbaa;
+    }
+
+    button {
+      margin-top: 28px;
+      padding: 14px 0;
+      width: 100%;
+      background: #c86b82;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 1.2px;
+      box-shadow: 0 5px 15px #c86b82cc;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:hover {
+      background: #a04c5e;
+      box-shadow: 0 8px 24px #a04c5ecc;
+    }
+
+    #msg-confirmacao {
+      margin-top: 30px;
+      padding: 18px 22px;
+      border-radius: 15px;
+      background: #d6f0db;
+      border: 1.5px solid #64a660;
+      color: #2e5b2e;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 12px #64a66099;
+      display: none;
+    }
+
+    footer {
+      background: #fff0f3;
+      color: #a04c5e;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 -2px 8px rgba(200, 107, 130, 0.15);
+      font-family: 'Playfair Display', serif;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 25px 20px;
+        margin: 20px 15px 40px;
+      }
+      nav a {
+        margin-left: 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NOME DO SALÃO</h1>
+    <nav>
+      <a href="index.html">Voltar</a>
+      <a href="agendamentos.html">Entrar</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Agende seu horário</h2>
+    <form id="form-agendamento">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required />
+
+      <label for="telefone">Telefone</label>
+      <input type="tel" id="telefone" name="telefone" placeholder="(99) 99999-9999" pattern="\d{10,11}" required />
+
+      <label for="servico">Serviço</label>
+      <select id="servico" name="servico" required>
+        <option value="" disabled selected>Selecione um serviço</option>
+        <option value="Manicure">Manicure</option>
+        <option value="Pedicure">Pedicure</option>
+        <option value="Alongamento de Unhas">Alongamento de Unhas</option>
+        <option value="Corte de Cabelo">Corte de Cabelo</option>
+        <option value="Coloração">Coloração</option>
+        <option value="Estética Facial">Estética Facial</option>
+        <option value="Depilação">Depilação</option>
+      </select>
+
+      <label for="data">Data</label>
+      <input type="date" id="data" name="data" required min="" />
+
+      <label for="horario">Horário</label>
+      <select id="horario" name="horario" required>
+        <option value="" disabled selected>Selecione um horário</option>
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+      </select>
+
+      <button type="submit">Confirmar Agendamento</button>
+    </form>
+
+    <div id="msg-confirmacao"></div>
+  </main>
+
+  <footer>
+    &copy; 2025 NOME DO SALÃO - Salão de Beleza Premium
+  </footer>
+
+  <script>
+    // Define o mínimo para o input data como hoje
+    const inputData = document.getElementById('data');
+    const hoje = new Date().toISOString().split('T')[0];
+    inputData.min = hoje;
+  </script>
+
+  <!-- Script Firebase + integração -->
+  <script type="module">
+    // Import Firebase (versão modular)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
+      authDomain: "salao-de-beleza-64049.firebaseapp.com",
+      projectId: "salao-de-beleza-64049",
+      storageBucket: "salao-de-beleza-64049.firebasestorage.app",
+      messagingSenderId: "92353576289",
+      appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Referência do formulário e da mensagem
+    const form = document.getElementById('form-agendamento');
+    const msg = document.getElementById('msg-confirmacao');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const nome = form.nome.value.trim();
+      const telefone = form.telefone.value.trim();
+      const servico = form.servico.value;
+      const data = form.data.value;
+      const horario = form.horario.value;
+
+      if (!nome || !telefone || !servico || !data || !horario) return;
+
+      try {
+        // Verificar se horário já está ocupado
+        const q = query(
+          collection(db, "agendamentos"),
+          where("data", "==", data),
+          where("horario", "==", horario)
+        );
+
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          msg.style.display = "block";
+          msg.style.background = "#ffe4e6";
+          msg.style.color = "#b91c1c";
+          msg.style.border = "1.5px solid #b91c1c";
+          msg.textContent = `Ops! O horário ${horario} do dia ${data} já está reservado. Por favor, escolha outro.`;
+          return;
+        }
+
+        // Salvar agendamento
+        await addDoc(collection(db, "agendamentos"), {
+          nome,
+          telefone,
+          servico,
+          data,
+          horario,
+          criadoEm: new Date()
+        });
+
+        // Mensagem sucesso
+        msg.style.display = "block";
+        msg.style.background = "#d6f0db";
+        msg.style.color = "#2e5b2e";
+        msg.style.border = "1.5px solid #64a660";
+        msg.textContent = `Agendamento confirmado para ${data} às ${horario}, ${nome}!`;
+
+        form.reset();
+        form.data.min = new Date().toISOString().split('T')[0];
+
+      } catch (error) {
+        console.error("Erro ao salvar agendamento:", error);
+        msg.style.display = "block";
+        msg.style.background = "#ffe4e6";
+        msg.style.color = "#b91c1c";
+        msg.style.border = "1.5px solid #b91c1c";
+        msg.textContent = "Erro ao confirmar agendamento. Tente novamente mais tarde.";
+      }
+    });
+  </script>
+</body>
+</html>

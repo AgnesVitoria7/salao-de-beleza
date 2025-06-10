@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salão - Serviços</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset básico */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #fdf6f7;
+      font-family: 'Montserrat', sans-serif;
+      color: #4b4b4b;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      color: #c86b82;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #a04c5e;
+    }
+
+    header {
+      background: #fff0f3;
+      padding: 25px 40px;
+      box-shadow: 0 2px 8px rgba(200, 107, 130, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Playfair Display', serif;
+    }
+    header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #c86b82;
+      letter-spacing: 2px;
+    }
+    nav a {
+      margin-left: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    main {
+      flex-grow: 1;
+      max-width: 900px;
+      margin: 40px auto 60px;
+      background: #fff;
+      border-radius: 15px;
+      padding: 40px 50px;
+      box-shadow: 0 10px 30px rgba(200, 107, 130, 0.1);
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 2.3rem;
+      margin-bottom: 25px;
+      color: #a04c5e;
+      border-bottom: 2px solid #c86b82;
+      padding-bottom: 8px;
+      max-width: fit-content;
+    }
+    ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px 30px;
+      padding-left: 0;
+    }
+    li {
+      background: #f8e6eb;
+      padding: 18px 22px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #92545e;
+      box-shadow: 0 4px 12px rgba(200, 107, 130, 0.1);
+      text-align: center;
+      transition: background-color 0.3s ease;
+      cursor: default;
+    }
+    li:hover {
+      background: #c86b82;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(200, 107, 130, 0.25);
+    }
+
+    footer {
+      background: #fff0f3;
+      color: #a04c5e;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 -2px 8px rgba(200, 107, 130, 0.15);
+      font-family: 'Playfair Display', serif;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 25px 20px;
+        margin: 20px 15px 40px;
+      }
+      nav a {
+        margin-left: 15px;
+        font-size: 0.9rem;
+      }
+      ul {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NOME DO SALÃO</h1>
+    <nav>
+      <a href="agendamento.html">Quero Agendar</a>
+      <a href="agendamentos.html">Entrar</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Catálogo de Serviços</h2>
+    <ul>
+      <li>Manicure</li>
+      <li>Pedicure</li>
+      <li>Alongamento de Unhas</li>
+      <li>Corte de Cabelo</li>
+      <li>Coloração</li>
+      <li>Estética Facial</li>
+      <li>Depilação</li>
+    </ul>
+  </main>
+
+  <footer>
+    &copy; 2025 NOME DO SALÃO - Salão de Beleza Premium
+  </footer>
+
+  <!-- Firebase App & Firestore -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
+      authDomain: "salao-de-beleza-64049.firebaseapp.com",
+      projectId: "salao-de-beleza-64049",
+      storageBucket: "salao-de-beleza-64049.firebasestorage.app",
+      messagingSenderId: "92353576289",
+      appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+  </script>
+</body>
+</html>
