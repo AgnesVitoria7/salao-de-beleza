@@ -2,198 +2,99 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agendamentos - Profissional</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agendamentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff0f3;
+      font-family: 'Montserrat', sans-serif;
+      background: #fff0f3;
       margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #c86b82;
-      color: white;
       padding: 20px;
-      text-align: center;
-      font-size: 1.8rem;
     }
-
-    .botoes-topo {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 20px auto;
-    }
-
-    .botoes-topo button {
-      background-color: #a04c5e;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .botoes-topo button:hover {
-      background-color: #893c4f;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 20px auto 40px;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #00000020;
-    }
-
-    h2 {
+    h1 {
+      font-family: 'Playfair Display', serif;
       color: #a04c5e;
-      border-bottom: 2px solid #c86b82;
-      padding-bottom: 10px;
+      text-align: center;
     }
-
-    .data-bloco {
-      margin-bottom: 40px;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 30px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(200, 107, 130, 0.1);
     }
-
     th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
       text-align: left;
     }
-
     th {
-      background-color: #f7dce3;
+      background: #c86b82;
+      color: white;
     }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #fff0f3;
-      color: #a04c5e;
+    tr:hover {
+      background: #fdf6f7;
     }
   </style>
 </head>
 <body>
+  <h1>Lista de Agendamentos</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Contato</th>
+        <th>Serviço</th>
+        <th>Data</th>
+        <th>Hora</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-agendamentos">
+      <!-- Dados do Firebase serão inseridos aqui -->
+    </tbody>
+  </table>
 
-  <header>
-    Agendamentos - Profissional
-  </header>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  <div class="botoes-topo">
-    <button onclick="window.location.href='agendamentosatendidos.html'">Agendamentos Atendidos</button>
-    <button onclick="window.location.href='index.html'">Voltar</button>
-  </div>
-
-  <main id="lista-agendamentos">
-    <p>Carregando agendamentos...</p>
-  </main>
-
-  <footer>
-    &copy; 2025 NOME DO SALÃO - Acesso Profissional
-  </footer>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
       authDomain: "salao-de-beleza-64049.firebaseapp.com",
-      databaseURL: "https://salao-de-beleza-64049-default-rtdb.firebaseio.com",
       projectId: "salao-de-beleza-64049",
       storageBucket: "salao-de-beleza-64049.appspot.com",
       messagingSenderId: "92353576289",
       appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const agendamentosRef = database.ref('agendamentos');
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const tabela = document.getElementById("tabela-agendamentos");
 
     async function carregarAgendamentos() {
-      try {
-        const snapshot = await agendamentosRef.once('value');
-        const data = snapshot.val();
-        const container = document.getElementById('lista-agendamentos');
-        container.innerHTML = '';
+      const agendamentosRef = collection(db, "agendamentos");
+      const q = query(agendamentosRef, orderBy("data"), orderBy("hora"));
+      const querySnapshot = await getDocs(q);
 
-        if (!data) {
-          container.innerHTML = '<p>Não há agendamentos cadastrados.</p>';
-          return;
-        }
-
-        const agendamentosPorData = {};
-
-        for (let id in data) {
-          const ag = data[id];
-          const dataAgendamento = ag.data;
-
-          if (!agendamentosPorData[dataAgendamento]) {
-            agendamentosPorData[dataAgendamento] = [];
-          }
-          agendamentosPorData[dataAgendamento].push(ag);
-        }
-
-        const datasOrdenadas = Object.keys(agendamentosPorData).sort();
-
-        datasOrdenadas.forEach(data => {
-          const bloco = document.createElement('div');
-          bloco.classList.add('data-bloco');
-
-          const titulo = document.createElement('h2');
-          titulo.textContent = `Agendamentos de ${data}`;
-          bloco.appendChild(titulo);
-
-          const tabela = document.createElement('table');
-          tabela.innerHTML = `
-            <thead>
-              <tr>
-                <th>Horário</th>
-                <th>Nome</th>
-                <th>Contato</th>
-                <th>Serviço</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${agendamentosPorData[data]
-                .sort((a, b) => a.hora.localeCompare(b.hora))
-                .map(ag => `
-                  <tr>
-                    <td>${ag.hora}</td>
-                    <td>${ag.nome}</td>
-                    <td>${ag.contato}</td>
-                    <td>${ag.servico}</td>
-                  </tr>
-                `).join('')}
-            </tbody>
-          `;
-          bloco.appendChild(tabela);
-          container.appendChild(bloco);
-        });
-      } catch (error) {
-        console.error("Erro ao carregar agendamentos:", error);
-        document.getElementById('lista-agendamentos').innerHTML = "<p>Erro ao carregar agendamentos.</p>";
-      }
+      querySnapshot.forEach(doc => {
+        const agendamento = doc.data();
+        const linha = document.createElement("tr");
+        linha.innerHTML = `
+          <td>${agendamento.nome}</td>
+          <td>${agendamento.contato}</td>
+          <td>${agendamento.servico}</td>
+          <td>${agendamento.data}</td>
+          <td>${agendamento.hora}</td>
+        `;
+        tabela.appendChild(linha);
+      });
     }
 
-    document.addEventListener('DOMContentLoaded', carregarAgendamentos);
+    carregarAgendamentos();
   </script>
 </body>
 </html>
