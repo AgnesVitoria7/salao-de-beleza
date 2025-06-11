@@ -1,129 +1,120 @@
-<!-- Salve este conteúdo como agendamentos.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Agendamentos</title>
+  <title>Administrativo - Agendamentos</title>
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
+      background: #fdf6f7;
       padding: 30px;
-      background: #fef4f6;
-      color: #333;
+      margin: 0;
     }
     h1 {
       color: #a04c5e;
+      text-align: center;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+    .agendamento-card {
       background: white;
-      box-shadow: 0 5px 15px rgba(200, 107, 130, 0.15);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(200,107,130,0.1);
     }
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid #e5c6cc;
-      text-align: left;
+    .agendamento-card p {
+      margin: 6px 0;
     }
-    th {
-      background-color: #fce3e9;
-      color: #a04c5e;
+    .btn-excluir,
+    .btn-atendido {
+      margin-right: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    tr:nth-child(even) {
-      background-color: #f9f2f4;
+    .btn-excluir {
+      background: #fda4af;
+      color: white;
+    }
+    .btn-atendido {
+      background: #86efac;
+      color: #065f46;
     }
   </style>
 </head>
 <body>
   <h1>Agendamentos</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>Serviço</th>
-        <th>Data</th>
-        <th>Horário</th>
-      </tr>
-    </thead>
-    <tbody id="lista-agendamentos">
-      <tr><td colspan="5">Carregando agendamentos...</td></tr>
-    </tbody>
-  </table>
+  <div id="agendamentos-container">
+    Carregando agendamentos...
+  </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    deleteDoc,
-    doc,
-    setDoc
-  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs,
+      deleteDoc, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
-    authDomain: "salao-de-beleza-64049.firebaseapp.com",
-    projectId: "salao-de-beleza-64049",
-    storageBucket: "salao-de-beleza-64049.appspot.com",
-    messagingSenderId: "92353576289",
-    appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
+      authDomain: "salao-de-beleza-64049.firebaseapp.com",
+      projectId: "salao-de-beleza-64049",
+      storageBucket: "salao-de-beleza-64049.appspot.com",
+      messagingSenderId: "92353576289",
+      appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const container = document.getElementById('agendamentos-container');
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const container = document.getElementById('agendamentos-container');
 
-  async function carregarAgendamentos() {
-    container.innerHTML = '';
-    const agendamentosRef = collection(db, 'agendamentos');
-    const snapshot = await getDocs(agendamentosRef);
+    async function carregarAgendamentos() {
+      container.innerHTML = 'Carregando agendamentos...';
+      const agRef = collection(db, 'agendamentos');
+      const snapshot = await getDocs(agRef);
+      container.innerHTML = '';
 
-    snapshot.forEach(docSnap => {
-      const agendamento = docSnap.data();
-      const id = docSnap.id;
+      if (snapshot.empty) {
+        container.innerHTML = '<p>Nenhum agendamento encontrado.</p>';
+        return;
+      }
 
-      const card = document.createElement('div');
-      card.className = 'agendamento-card';
-      card.innerHTML = `
-        <h3>${agendamento.nome}</h3>
-        <p><strong>Serviço:</strong> ${agendamento.servico}</p>
-        <p><strong>Data:</strong> ${agendamento.data}</p>
-        <p><strong>Hora:</strong> ${agendamento.hora}</p>
-        <p><strong>Contato:</strong> ${agendamento.contato}</p>
-        <button class="btn-excluir" data-id="${id}">Excluir</button>
-        <button class="btn-atendido" data-id="${id}">Atendido</button>
-      `;
-      container.appendChild(card);
-    });
-
-    // Exclusão
-    document.querySelectorAll('.btn-excluir').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        await deleteDoc(doc(db, 'agendamentos', id));
-        carregarAgendamentos();
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+        const card = document.createElement('div');
+        card.className = 'agendamento-card';
+        card.innerHTML = `
+          <p><strong>${data.nome}</strong></p>
+          <p>Serviço: ${data.servico}</p>
+          <p>Data: ${data.data} | Hora: ${data.hora}</p>
+          <p>Contato: ${data.contato}</p>
+          <button class="btn-excluir" data-id="${id}">Excluir</button>
+          <button class="btn-atendido" data-id="${id}">Atendido</button>
+        `;
+        container.appendChild(card);
       });
-    });
 
-    // Marcar como atendido
-    document.querySelectorAll('.btn-atendido').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        const originalDoc = snapshot.docs.find(d => d.id === id);
-        const data = originalDoc.data();
-        await setDoc(doc(db, 'agendamentosAtendidos', id), data);
-        await deleteDoc(doc(db, 'agendamentos', id));
-        carregarAgendamentos();
+      container.querySelectorAll('.btn-excluir').forEach(btn => {
+        btn.onclick = async () => {
+          await deleteDoc(doc(db, 'agendamentos', btn.dataset.id));
+          carregarAgendamentos();
+        };
       });
-    });
-  }
 
-  carregarAgendamentos();
-</script>
+      container.querySelectorAll('.btn-atendido').forEach(btn => {
+        btn.onclick = async () => {
+          const docSnap = snapshot.docs.find(d => d.id === btn.dataset.id);
+          const data = docSnap.data();
+          await setDoc(doc(db, 'agendamentosAtendidos', btn.dataset.id), data);
+          await deleteDoc(doc(db, 'agendamentos', btn.dataset.id));
+          carregarAgendamentos();
+        };
+      });
+    }
 
-
+    carregarAgendamentos();
+  </script>
 </body>
 </html>
