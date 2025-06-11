@@ -95,13 +95,11 @@
     Agendamentos - Profissional
   </header>
 
-  <!-- Botões -->
   <div class="botoes-topo">
     <button onclick="window.location.href='agendamentosatendidos.html'">Agendamentos Atendidos</button>
     <button onclick="window.location.href='index.html'">Voltar</button>
   </div>
 
-  <!-- Lista de agendamentos -->
   <main id="lista-agendamentos">
     <p>Carregando agendamentos...</p>
   </main>
@@ -115,7 +113,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Inicialização do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
       authDomain: "salao-de-beleza-64049.firebaseapp.com",
@@ -135,7 +132,7 @@
         const snapshot = await agendamentosRef.once('value');
         const data = snapshot.val();
         const container = document.getElementById('lista-agendamentos');
-        container.innerHTML = ''; // Limpa conteúdo
+        container.innerHTML = '';
 
         if (!data) {
           container.innerHTML = '<p>Não há agendamentos cadastrados.</p>';
@@ -170,18 +167,18 @@
               <tr>
                 <th>Horário</th>
                 <th>Nome</th>
-                <th>Telefone</th>
+                <th>Contato</th>
                 <th>Serviço</th>
               </tr>
             </thead>
             <tbody>
               ${agendamentosPorData[data]
-                .sort((a, b) => a.horario.localeCompare(b.horario))
+                .sort((a, b) => a.hora.localeCompare(b.hora))
                 .map(ag => `
                   <tr>
-                    <td>${ag.horario}</td>
+                    <td>${ag.hora}</td>
                     <td>${ag.nome}</td>
-                    <td>${ag.telefone}</td>
+                    <td>${ag.contato}</td>
                     <td>${ag.servico}</td>
                   </tr>
                 `).join('')}
