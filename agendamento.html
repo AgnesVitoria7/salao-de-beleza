@@ -224,7 +224,9 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import {
+      getFirestore, collection, addDoc, query, where, getDocs
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
@@ -241,7 +243,7 @@
     const form = document.getElementById('form-agendamento');
     const msg = document.getElementById('msg-confirmacao');
 
-    form.addEventListener('submit', async e => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nome = form.nome.value.trim();
@@ -253,15 +255,15 @@
       if (!nome || !telefone || !servico || !data || !horario) return;
 
       try {
-        // Verificar se o horário já está reservado
         const q = query(
           collection(db, "agendamentos"),
           where("data", "==", data),
           where("hora", "==", horario)
         );
-        const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
           msg.style.display = "block";
           msg.style.background = "#ffe4e6";
           msg.style.color = "#b91c1c";
@@ -270,14 +272,13 @@
           return;
         }
 
-        // Salvar agendamento
         await addDoc(collection(db, "agendamentos"), {
           nome,
           contato: telefone,
           servico,
           data,
           hora: horario,
-          criadoEm: new Date()
+          criadoEm: new Date().toISOString()
         });
 
         msg.style.display = "block";
@@ -287,15 +288,15 @@
         msg.textContent = `Agendamento confirmado para ${data} às ${horario}, ${nome}!`;
 
         form.reset();
-        form.data.min = new Date().toISOString().split('T')[0];
+        inputData.min = new Date().toISOString().split('T')[0];
 
-      } catch (error) {
-        console.error("Erro ao salvar agendamento:", error);
+      } catch (err) {
+        console.error("Erro ao salvar ou verificar agendamento:", err);
         msg.style.display = "block";
         msg.style.background = "#ffe4e6";
         msg.style.color = "#b91c1c";
         msg.style.border = "1.5px solid #b91c1c";
-        msg.textContent = "Erro ao confirmar agendamento. Tente novamente mais tarde.";
+        msg.textContent = "Erro ao confirmar agendamento. Verifique sua conexão ou tente novamente mais tarde.";
       }
     });
   </script>
