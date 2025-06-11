@@ -103,7 +103,7 @@
 
   <!-- Lista de agendamentos -->
   <main id="lista-agendamentos">
-    <!-- Conteúdo inserido via JavaScript -->
+    <p>Carregando agendamentos...</p>
   </main>
 
   <footer>
@@ -115,6 +115,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
+    // Inicialização do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
       authDomain: "salao-de-beleza-64049.firebaseapp.com",
@@ -129,58 +130,73 @@
     const database = firebase.database();
     const agendamentosRef = database.ref('agendamentos');
 
-    agendamentosRef.once('value').then(snapshot => {
-      const data = snapshot.val();
-      const agendamentosPorData = {};
+    async function carregarAgendamentos() {
+      try {
+        const snapshot = await agendamentosRef.once('value');
+        const data = snapshot.val();
+        const container = document.getElementById('lista-agendamentos');
+        container.innerHTML = ''; // Limpa conteúdo
 
-      for (let id in data) {
-        const ag = data[id];
-        const dataAgendamento = ag.data;
-
-        if (!agendamentosPorData[dataAgendamento]) {
-          agendamentosPorData[dataAgendamento] = [];
+        if (!data) {
+          container.innerHTML = '<p>Não há agendamentos cadastrados.</p>';
+          return;
         }
-        agendamentosPorData[dataAgendamento].push(ag);
+
+        const agendamentosPorData = {};
+
+        for (let id in data) {
+          const ag = data[id];
+          const dataAgendamento = ag.data;
+
+          if (!agendamentosPorData[dataAgendamento]) {
+            agendamentosPorData[dataAgendamento] = [];
+          }
+          agendamentosPorData[dataAgendamento].push(ag);
+        }
+
+        const datasOrdenadas = Object.keys(agendamentosPorData).sort();
+
+        datasOrdenadas.forEach(data => {
+          const bloco = document.createElement('div');
+          bloco.classList.add('data-bloco');
+
+          const titulo = document.createElement('h2');
+          titulo.textContent = `Agendamentos de ${data}`;
+          bloco.appendChild(titulo);
+
+          const tabela = document.createElement('table');
+          tabela.innerHTML = `
+            <thead>
+              <tr>
+                <th>Horário</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Serviço</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${agendamentosPorData[data]
+                .sort((a, b) => a.horario.localeCompare(b.horario))
+                .map(ag => `
+                  <tr>
+                    <td>${ag.horario}</td>
+                    <td>${ag.nome}</td>
+                    <td>${ag.telefone}</td>
+                    <td>${ag.servico}</td>
+                  </tr>
+                `).join('')}
+            </tbody>
+          `;
+          bloco.appendChild(tabela);
+          container.appendChild(bloco);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar agendamentos:", error);
+        document.getElementById('lista-agendamentos').innerHTML = "<p>Erro ao carregar agendamentos.</p>";
       }
+    }
 
-      const container = document.getElementById('lista-agendamentos');
-      const datasOrdenadas = Object.keys(agendamentosPorData).sort();
-
-      datasOrdenadas.forEach(data => {
-        const bloco = document.createElement('div');
-        bloco.classList.add('data-bloco');
-
-        const titulo = document.createElement('h2');
-        titulo.textContent = `Agendamentos de ${data}`;
-        bloco.appendChild(titulo);
-
-        const tabela = document.createElement('table');
-        tabela.innerHTML = `
-          <thead>
-            <tr>
-              <th>Horário</th>
-              <th>Nome</th>
-              <th>Telefone</th>
-              <th>Serviço</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${agendamentosPorData[data]
-              .sort((a, b) => a.horario.localeCompare(b.horario))
-              .map(ag => `
-                <tr>
-                  <td>${ag.horario}</td>
-                  <td>${ag.nome}</td>
-                  <td>${ag.telefone}</td>
-                  <td>${ag.servico}</td>
-                </tr>
-              `).join('')}
-          </tbody>
-        `;
-        bloco.appendChild(tabela);
-        container.appendChild(bloco);
-      });
-    });
+    document.addEventListener('DOMContentLoaded', carregarAgendamentos);
   </script>
 </body>
 </html>
