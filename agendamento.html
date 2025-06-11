@@ -217,33 +217,27 @@
   </footer>
 
   <script>
-    // Define o mínimo para o input data como hoje
     const inputData = document.getElementById('data');
     const hoje = new Date().toISOString().split('T')[0];
     inputData.min = hoje;
   </script>
 
-  <!-- Script Firebase + integração -->
   <script type="module">
-    // Import Firebase (versão modular)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // Configuração Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
       authDomain: "salao-de-beleza-64049.firebaseapp.com",
       projectId: "salao-de-beleza-64049",
-      storageBucket: "salao-de-beleza-64049.firebasestorage.app",
+      storageBucket: "salao-de-beleza-64049.appspot.com",
       messagingSenderId: "92353576289",
       appId: "1:92353576289:web:715c2eb1064dea8c7e9920"
     };
 
-    // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Referência do formulário e da mensagem
     const form = document.getElementById('form-agendamento');
     const msg = document.getElementById('msg-confirmacao');
 
@@ -259,14 +253,14 @@
       if (!nome || !telefone || !servico || !data || !horario) return;
 
       try {
-        // Verificar se horário já está ocupado
+        // Verificar se o horário já está reservado
         const q = query(
           collection(db, "agendamentos"),
           where("data", "==", data),
-          where("horario", "==", horario)
+          where("hora", "==", horario)
         );
-
         const querySnapshot = await getDocs(q);
+
         if (!querySnapshot.empty) {
           msg.style.display = "block";
           msg.style.background = "#ffe4e6";
@@ -279,14 +273,13 @@
         // Salvar agendamento
         await addDoc(collection(db, "agendamentos"), {
           nome,
-          telefone,
+          contato: telefone,
           servico,
           data,
-          horario,
+          hora: horario,
           criadoEm: new Date()
         });
 
-        // Mensagem sucesso
         msg.style.display = "block";
         msg.style.background = "#d6f0db";
         msg.style.color = "#2e5b2e";
