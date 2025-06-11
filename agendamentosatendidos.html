@@ -43,10 +43,30 @@
       padding: 16px;
       margin-bottom: 16px;
       box-shadow: 0 4px 12px rgba(200,107,130,0.1);
+      position: relative;
     }
 
     .agendamento-card p {
       margin: 6px 0;
+    }
+
+    .btn-excluir {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: background 0.3s ease;
+    }
+
+    .btn-excluir:hover {
+      background: #b71c1c;
     }
 
     .sem-agendamentos {
@@ -70,7 +90,13 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
@@ -95,8 +121,10 @@
         return;
       }
 
-      snapshot.forEach(doc => {
-        const data = doc.data();
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+
         const card = document.createElement('div');
         card.className = 'agendamento-card';
         card.innerHTML = `
@@ -104,7 +132,20 @@
           <p>Serviço: ${data.servico}</p>
           <p>Data: ${data.data} | Hora: ${data.hora}</p>
           <p>Contato: ${data.contato}</p>
+          <button class="btn-excluir" data-id="${id}">Excluir</button>
         `;
+
+        card.querySelector('.btn-excluir').addEventListener('click', async () => {
+          if (confirm(`Deseja excluir o agendamento de ${data.nome}?`)) {
+            await deleteDoc(doc(db, "agendamentosAtendidos", id));
+            card.remove();
+
+            if (container.children.length === 0) {
+              container.innerHTML = '<p class="sem-agendamentos">Nenhum agendamento atendido encontrado.</p>';
+            }
+          }
+        });
+
         container.appendChild(card);
       });
     }
