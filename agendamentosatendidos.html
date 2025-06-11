@@ -2,38 +2,57 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Atendidos</title>
+  <title>Agendamentos Atendidos</title>
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
-      padding: 20px;
-      background: #f3faf7;
+      background: #fdf6f7;
+      padding: 30px;
       margin: 0;
     }
+
     h1 {
-      color: #065f46;
+      color: #a04c5e;
       text-align: center;
     }
+
     .top-buttons {
       text-align: center;
       margin-bottom: 20px;
     }
+
     .top-buttons a {
       display: inline-block;
-      background: #065f46;
+      background: #a04c5e;
       color: white;
       padding: 10px 16px;
       margin: 0 8px;
       border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
+      transition: background 0.3s ease;
     }
+
+    .top-buttons a:hover {
+      background: #87394d;
+    }
+
     .agendamento-card {
-      background: #e6fffa;
-      border-left: 5px solid #10b981;
+      background: white;
+      border-radius: 10px;
       padding: 16px;
-      border-radius: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(200,107,130,0.1);
+    }
+
+    .agendamento-card p {
+      margin: 6px 0;
+    }
+
+    .sem-agendamentos {
+      text-align: center;
+      font-weight: bold;
+      color: #77505d;
     }
   </style>
 </head>
@@ -41,10 +60,13 @@
   <h1>Agendamentos Atendidos</h1>
 
   <div class="top-buttons">
-    <a href="agendamentos.html">Voltar</a>
+    <a href="agendamentos.html">Voltar para Pendentes</a>
+    <a href="index.html">Página Inicial</a>
   </div>
 
-  <div id="atendidos-container">Carregando atendidos...</div>
+  <div id="atendidos-container">
+    Carregando atendimentos...
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
@@ -64,18 +86,17 @@
     const container = document.getElementById('atendidos-container');
 
     async function carregarAtendidos() {
-      container.innerHTML = 'Carregando atendidos...';
       const ref = collection(db, 'agendamentosAtendidos');
       const snapshot = await getDocs(ref);
       container.innerHTML = '';
 
       if (snapshot.empty) {
-        container.innerHTML = '<p>Nenhum atendimento registrado.</p>';
+        container.innerHTML = '<p class="sem-agendamentos">Nenhum agendamento atendido encontrado.</p>';
         return;
       }
 
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
+      snapshot.forEach(doc => {
+        const data = doc.data();
         const card = document.createElement('div');
         card.className = 'agendamento-card';
         card.innerHTML = `
