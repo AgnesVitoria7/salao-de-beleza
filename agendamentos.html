@@ -54,7 +54,14 @@
 
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    deleteDoc,
+    doc,
+    setDoc
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDAEt00r876n9nYopvozx87JS4NbOVfmPk",
@@ -67,47 +74,56 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  const lista = document.getElementById("lista-agendamentos");
+  const container = document.getElementById('agendamentos-container');
 
   async function carregarAgendamentos() {
-    const agendamentosRef = collection(db, "agendamentos");
+    container.innerHTML = '';
+    const agendamentosRef = collection(db, 'agendamentos');
     const snapshot = await getDocs(agendamentosRef);
 
-    lista.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const agendamento = docSnap.data();
+      const id = docSnap.id;
 
-    if (snapshot.empty) {
-      lista.innerHTML = "<tr><td colspan='5'>Nenhum agendamento encontrado.</td></tr>";
-      return;
-    }
-
-    const agendamentos = [];
-    snapshot.forEach(doc => {
-      agendamentos.push(doc.data());
-    });
-
-    // Ordena por data e hora (mesmo sendo string, para garantir ordem)
-    agendamentos.sort((a, b) => {
-      const dataA = a.data + a.hora;
-      const dataB = b.data + b.hora;
-      return dataA.localeCompare(dataB);
-    });
-
-    agendamentos.forEach(agendamento => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${agendamento.nome}</td>
-        <td>${agendamento.contato}</td>
-        <td>${agendamento.servico}</td>
-        <td>${agendamento.data}</td>
-        <td>${agendamento.hora}</td>
+      const card = document.createElement('div');
+      card.className = 'agendamento-card';
+      card.innerHTML = `
+        <h3>${agendamento.nome}</h3>
+        <p><strong>Serviço:</strong> ${agendamento.servico}</p>
+        <p><strong>Data:</strong> ${agendamento.data}</p>
+        <p><strong>Hora:</strong> ${agendamento.hora}</p>
+        <p><strong>Contato:</strong> ${agendamento.contato}</p>
+        <button class="btn-excluir" data-id="${id}">Excluir</button>
+        <button class="btn-atendido" data-id="${id}">Atendido</button>
       `;
-      lista.appendChild(tr);
+      container.appendChild(card);
+    });
+
+    // Exclusão
+    document.querySelectorAll('.btn-excluir').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        await deleteDoc(doc(db, 'agendamentos', id));
+        carregarAgendamentos();
+      });
+    });
+
+    // Marcar como atendido
+    document.querySelectorAll('.btn-atendido').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const originalDoc = snapshot.docs.find(d => d.id === id);
+        const data = originalDoc.data();
+        await setDoc(doc(db, 'agendamentosAtendidos', id), data);
+        await deleteDoc(doc(db, 'agendamentos', id));
+        carregarAgendamentos();
+      });
     });
   }
 
   carregarAgendamentos();
 </script>
+
 
 </body>
 </html>
